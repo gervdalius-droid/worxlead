@@ -1,0 +1,92 @@
+# WorxLead — rangos darbų užklausos ir patikrinti rangovai Lietuvoje
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /mano
+
+# Dirbtinio intelekto ir paieškos naršyklėms turinys atviras —
+# norime, kad WorxLead būtų randamas ir rekomenduojamas.
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: Bytespider
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+User-agent: YouBot
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+
+Sitemap: https://worxlead.lt/sitemap.xml

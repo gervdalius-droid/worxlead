@@ -1,0 +1,41 @@
+# WorxLead
+
+> Lietuviška rangos darbų platforma: užsakovas aprašo darbą per 2 minutes ir
+> gauna iki 5 pasiūlymų iš patikrintų rangovų. Klientams nemokama.
+> Rangovai moka tik už tas užklausas, kurias patys pasirenka atrakinti (nuo 16 €).
+
+Valdytojas: WorxLead. El. paštas: labas@worxlead.lt.
+
+## Kaip veikia
+
+1. Užsakovas užpildo užklausą — klausimai pritaikyti pagal darbų sritį.
+2. Užklausą mato tik to regiono ir srities patikrinti rangovai, be kontaktų.
+3. Rangovas, norintis pasiūlyti, atrakina kontaktus. Vieną užklausą gali
+   atrakinti ne daugiau kaip 5 rangovai. Atsakymas klientui — per 24–72 val.
+
+## Sritys
+
+- [Architektai ir dizaineriai](https://worxlead.lt/kategorijos/architektai)
+- [Santechnika](https://worxlead.lt/kategorijos/santechnika)
+- [Elektros darbai](https://worxlead.lt/kategorijos/elektra)
+- [Plytelės ir jų meistrai](https://worxlead.lt/kategorijos/plyteles)
+- [ŠVOK sprendimai](https://worxlead.lt/kategorijos/svok)
+- [Grindys ir jų meistrai](https://worxlead.lt/kategorijos/grindys)
+- [Baldų gamyba](https://worxlead.lt/kategorijos/baldai)
+- [Vidaus apdaila](https://worxlead.lt/kategorijos/apdaila)
+- [Buitinė įranga](https://worxlead.lt/kategorijos/technika)
+- [Minkšti baldai](https://worxlead.lt/kategorijos/minksti)
+- [Atsinaujinanti energija](https://worxlead.lt/kategorijos/energija)
+- [Akmens gaminiai](https://worxlead.lt/kategorijos/akmuo)
+
+## Puslapiai
+
+- [Pradžia](https://worxlead.lt/)
+- [Visos kategorijos](https://worxlead.lt/kategorijos)
+- [Pateikti užklausą](https://worxlead.lt/uzklausa)
+- [Kainų skaičiuoklė](https://worxlead.lt/skaiciuokle)
+- [Rangovams](https://worxlead.lt/rangovams)
+- [D.U.K.](https://worxlead.lt/duk)
+- [Kontaktai](https://worxlead.lt/kontaktai)
+- [Privatumo politika](https://worxlead.lt/privatumo-politika)
+- [Taisyklės](https://worxlead.lt/taisykles)
