@@ -645,11 +645,46 @@ select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
   .ovl .promo{animation:promoIn .28s cubic-bezier(.2,.7,.3,1) both}
   @keyframes promoIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
 }
-.promo-badge{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px;padding:13px 15px;
-  border-radius:var(--r-m);background:var(--ok-soft);color:var(--ok);border:1px solid color-mix(in srgb,var(--ok) 28%,transparent)}
-.promo-badge svg{flex:0 0 auto;margin-top:2px}
-.promo-badge b{display:block;font-size:.95rem}
-.promo-badge p{margin:2px 0 0;color:inherit;opacity:.85}
+/* Akcijos juosta anketos viršuje — ta pati tamsi spalva kaip iššokančio lango viršus */
+.promo-badge{position:relative;overflow:hidden;margin-bottom:22px;padding:20px 20px 16px;border-radius:var(--r-l,16px);
+  background:var(--dark);color:#fff;box-shadow:0 10px 30px rgba(10,20,40,.18);
+  border:1px solid color-mix(in srgb,var(--brand-l) 35%,transparent)}
+.promo-badge::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.07) 50%,transparent 65%);background-size:250% 100%}
+.pb-head{display:flex;gap:14px;align-items:flex-start;position:relative}
+.pb-ic{flex:0 0 auto;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+  background:rgba(255,255,255,.1);color:var(--brand-l)}
+.pb-ic svg{width:24px;height:24px}
+.pb-eyebrow{display:inline-block;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.12);
+  font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.pb-h{display:block;margin-top:7px;font-size:1.18rem;line-height:1.3;font-weight:800;color:#fff}
+.pb-was{margin-left:6px;font-size:.95rem;font-weight:700;color:rgba(255,255,255,.5);text-decoration:line-through;text-decoration-thickness:2px}
+.pb-now{font-weight:850;color:var(--brand-l)}
+.pb-sub{margin:6px 0 0;font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.78)}
+.pb-steps{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative}
+.pb-steps li{display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:11px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:.86rem;font-weight:700;line-height:1.25}
+.pb-steps b{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.78rem;
+  color:var(--brand-l);border:1.5px solid var(--brand-l)}
+.pb-steps small{display:block;margin-top:2px;font-size:.76rem;font-weight:500;color:rgba(255,255,255,.62)}
+.pb-foot{position:relative;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  margin-top:14px;font-size:.86rem;color:rgba(255,255,255,.7)}
+.pb-foot a{color:#fff;font-weight:700;text-decoration:none}
+.pb-foot a:hover{color:var(--brand-l)}
+.pb-ok{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:#86e0a8}
+.pb-ok svg{width:16px;height:16px}
+.promo-ask{margin-top:6px}
+.promo-ask a{font-weight:700}
+@media (prefers-reduced-motion:no-preference){
+  .promo-badge::before{animation:pbShine 6s ease-in-out infinite}
+  .pb-ic svg{animation:pbWiggle 5s ease-in-out infinite}
+  @keyframes pbShine{0%,55%{background-position:150% 0}100%{background-position:-100% 0}}
+  @keyframes pbWiggle{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(-10deg)}92%{transform:rotate(9deg)}95%{transform:rotate(-5deg)}}
+}
+@media (max-width:640px){
+  .pb-steps{grid-template-columns:1fr}
+  .pb-foot .btn{width:100%}
+}
 .hint{color:var(--muted);font-size:.82rem;margin-top:6px}
 .opts{display:grid;gap:9px}
 .opts.c2{grid-template-columns:repeat(2,1fr)}
@@ -2826,14 +2861,62 @@ function promoHTML() {
       '<p class="tiny muted center promo-fine">' + ic("shield") + " " + esc(C("promo.fine",
         "Kreditas užskaitomas patvirtinus jūsų anketą. Naujienlaiškių nesiunčiame.",
         "The credit is granted once your application is approved. We don't send newsletters.")) + "</p>" +
+      (CONFIG.email ? '<p class="tiny muted center promo-ask">' +
+        esc(C("promo.ask", "Klausimų? Rašykite", "Questions? Email us")) + ' <a href="mailto:' + esc(CONFIG.email) + '">' +
+        esc(CONFIG.email) + "</a></p>" : "") +
     "</div>" +
   "</div>";
 }
 
-function maybePromo() {
+/* Iššokantis langas nerodomas iškart: lankytojas pirma pamato puslapį.
+   Atsidaro po 12 s, nuslinkus trečdalį puslapio arba pelei krypstant link
+   naršyklės skirtukų — kas įvyks pirmiau. Tam pačiam lankytojui — ne dažniau
+   kaip kartą per 7 dienas. Jei žmogus jau pildo anketą — netrukdom. */
+const K_PROMO_SEEN = "wl_promo_seen";
+var promoCleanup = null;
+function promoStop() { if (promoCleanup) { promoCleanup(); promoCleanup = null; } }
+function maybePromo(force) {
+  promoStop();
   if (!promoOn() || promoGot()) return;
   /* Jei rangovas jau pateikė anketą, siūlyti nebėra ko. */
   if (store.get("wl_partner_last", null)) return;
+  if (force) return openPromo();
+  const seen = +store.get(K_PROMO_SEEN, 0);
+  if (seen && Date.now() - seen < 7 * 864e5) return;
+  const start = Date.now();
+  const fire = () => {
+    promoStop();
+    if (currentRoute().path !== "/rangovams" || $(".ovl")) return;
+    const a = document.activeElement;
+    if (a && a.closest && a.closest("#partnerForm")) return;
+    openPromo();
+  };
+  const onScroll = () => {
+    if (Date.now() - start < 3000) return;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    if (h > 0 && window.scrollY / h >= 0.35) fire();
+  };
+  const onOut = e => { if (!e.relatedTarget && e.clientY <= 0) fire(); };
+  const onFocus = e => { if (e.target && e.target.closest && e.target.closest("#partnerForm")) promoStop(); };
+  const tm = setTimeout(fire, 12000);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  const pele = window.matchMedia && window.matchMedia("(pointer:fine)").matches;
+  if (pele) document.addEventListener("mouseout", onOut);
+  document.addEventListener("focusin", onFocus);
+  promoCleanup = () => {
+    clearTimeout(tm);
+    window.removeEventListener("scroll", onScroll);
+    if (pele) document.removeEventListener("mouseout", onOut);
+    document.removeEventListener("focusin", onFocus);
+  };
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-promo-open]");
+  if (b) { e.preventDefault(); maybePromo(true); }
+});
+
+function openPromo() {
+  store.set(K_PROMO_SEEN, Date.now());
   modal(promoHTML(), { onOpen: o => {
     const f = o.querySelector("#promoForm");
     f.addEventListener("submit", e => {
@@ -2873,13 +2956,36 @@ function maybePromo() {
   }});
 }
 
+/* Akcijos juosta anketos viršuje — rodoma visiems rangovams.
+   Kas jau užsiregistravo akcijai, vietoj mygtuko mato patvirtinimą. */
 function promoBadge() {
-  if (!promoOn() || !promoGot()) return "";
-  const L = LANG === "lt";
-  return '<div class="promo-badge">' + ic("gift") + "<div><b>" +
-    esc(L ? "Pirma užklausa — nemokamai" : "First lead free") + "</b>" +
-    '<p class="tiny">' + esc(L ? "Kreditas užskaitomas, kai patvirtinsime jūsų anketą."
-                               : "The credit is granted once we approve your application.") + "</p></div></div>";
+  if (!promoOn()) return "";
+  const L = LANG === "lt", got = promoGot();
+  const zingsnis = (n, h, s) => "<li><b>" + n + "</b><span>" + esc(h) + "<small>" + esc(s) + "</small></span></li>";
+  return '<div class="promo-badge">' +
+    '<div class="pb-head">' +
+      '<span class="pb-ic">' + ic("gift") + "</span>" +
+      "<div>" +
+        '<span class="pb-eyebrow">' + esc(C("promo.eyebrow", "Naujiems rangovams", "New contractors")) + "</span>" +
+        '<b class="pb-h">' + esc(C("promo.h", "Pirma užklausa — nemokamai", "Your first lead is free")) +
+          ' <span class="pb-was">' + vienosKaina() + ' €</span> <span class="pb-now">0 €</span></b>' +
+        '<p class="pb-sub">' + esc(C("promo.bn.sub",
+          "Išbandykite WorxLead be rizikos: pirmą užsakovo kontaktą gausite nemokamai. Kreditas užskaitomas, kai patvirtinsime jūsų anketą.",
+          "Try WorxLead risk-free: your first client contact is on us. The credit is granted once we approve your application.")) + "</p>" +
+      "</div>" +
+    "</div>" +
+    '<ol class="pb-steps">' +
+      zingsnis(1, L ? "Užpildykite anketą" : "Fill in the form", L ? "apie 2 min." : "about 2 min") +
+      zingsnis(2, L ? "Patvirtiname" : "We approve", L ? "per 1–2 darbo d." : "within 1–2 business days") +
+      zingsnis(3, L ? "Gaunate užklausą" : "You get a lead", L ? "pirma — 0 €" : "the first one is 0 €") +
+    "</ol>" +
+    '<div class="pb-foot">' +
+      (CONFIG.email ? "<span>" + esc(L ? "Klausimų?" : "Questions?") + ' <a href="mailto:' + esc(CONFIG.email) + '">' + esc(CONFIG.email) + "</a></span>" : "<span></span>") +
+      (got
+        ? '<span class="pb-ok">' + ic("check") + esc(L ? "Akcija užregistruota" : "Offer claimed") + "</span>"
+        : '<button class="btn sm" type="button" data-promo-open>' + ic("gift") + esc(C("promo.cta", "Atsiimti nemokamą užklausą", "Claim my free lead")) + "</button>") +
+    "</div>" +
+  "</div>";
 }
 function renderPartnerForm() {
   const L = LANG === "lt";
@@ -3139,6 +3245,7 @@ function render() {
   consentRender();
   $("#navLinks").classList.remove("open");
   $("#burger").setAttribute("aria-expanded", "false");
+  promoStop();
   if (path === "/uzklausa") { WIZ_ATIDARYTAS = WIZ_ATIDARYTAS || Date.now(); renderWiz(); bindWiz(); }
   if (path === "/skaiciuokle") { renderCalc(); bindCalc(); }
   if (path === "/rangovams") { renderROI(); bindROI(); renderPartnerForm(); bindPartnerForm(); maybePromo(); }
