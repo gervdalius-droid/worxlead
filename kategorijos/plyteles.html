@@ -681,6 +681,15 @@ select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
 .pb-err{margin:6px 0 0;color:#fca5a5;font-size:.82rem;font-weight:650}
 .pb-fine{font-size:.8rem;color:rgba(255,255,255,.55)}
 @media (max-width:640px){ .pb-row{flex-direction:column} .pb-row .btn{width:100%} }
+.pb-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pb-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:.78rem;font-weight:700;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff}
+.pb-tag svg{width:13px;height:13px;color:var(--brand-l)}
+.pb-tag-main{background:var(--brand-l);border-color:var(--brand-l);color:var(--dark)}
+.pb-tag-main svg{color:var(--dark)}
+.promo-nosub{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:5px 12px;border-radius:999px;
+  background:var(--brand-l);color:var(--dark);font-size:.82rem;font-weight:800}
+.promo-nosub svg{width:14px;height:14px}
 .promo-ask{margin-top:6px}
 .promo-ask a{font-weight:700}
 @media (prefers-reduced-motion:no-preference){
@@ -2835,6 +2844,7 @@ function promoHTML() {
         '<span class="promo-was">' + kaina + ' €</span>' +
         '<span class="promo-now">0 €</span>' +
       "</div>" +
+      '<span class="promo-nosub">' + ic("check") + esc(C("promo.tag1", "Be abonentinio mokesčio", "No subscription fee")) + "</span>" +
       '<p class="promo-sub">' + esc(C("promo.pricenote",
         "Pirmam kontaktui su užsakovu. Toliau mokate tik už tas užklausas, kurias patys pasirenkate.",
         "For your first client contact. After that you only pay for the leads you pick.")) + "</p>" +
@@ -2852,7 +2862,7 @@ function promoHTML() {
           "Vieną užklausą atrakina ne daugiau kaip " + CONFIG.maxOffers + " rangovai",
           "At most " + CONFIG.maxOffers + " contractors unlock one lead")) + "</span></li>" +
         "<li>" + ic("check") + "<span>" + esc(C("promo.b4",
-          "Jokios prenumeratos ir jokių įsipareigojimų",
+          "Jokio abonentinio mokesčio ir jokių įsipareigojimų",
           "No subscription, no commitment")) + "</span></li>" +
       "</ul>" +
       '<form id="promoForm" novalidate>' + spamLaukas() +
@@ -3000,6 +3010,12 @@ function promoBadge() {
         '<p class="pb-sub">' + esc(C("promo.bn.sub",
           "Išbandykite WorxLead be rizikos: pirmą užsakovo kontaktą gausite nemokamai. Kreditas užskaitomas, kai patvirtinsime jūsų anketą.",
           "Try WorxLead risk-free: your first client contact is on us. The credit is granted once we approve your application.")) + "</p>" +
+        /* Svarbiausias argumentas rangovui — jokio mėnesinio mokesčio. */
+        '<div class="pb-tags">' +
+          '<span class="pb-tag pb-tag-main">' + ic("check") + esc(C("promo.tag1", "Be abonentinio mokesčio", "No subscription fee")) + "</span>" +
+          '<span class="pb-tag">' + ic("check") + esc(C("promo.tag2", "Mokate tik už pasirinktas užklausas", "Pay only for the leads you pick")) + "</span>" +
+          '<span class="pb-tag">' + ic("check") + esc(C("promo.tag3", "Jokių įsipareigojimų", "No commitment")) + "</span>" +
+        "</div>" +
       "</div>" +
     "</div>" +
     (got ? "" :
