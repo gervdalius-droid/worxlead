@@ -673,6 +673,14 @@ select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
 .pb-foot a:hover{color:var(--brand-l)}
 .pb-ok{display:inline-flex;gap:6px;align-items:center;font-weight:700;color:#86e0a8}
 .pb-ok svg{width:16px;height:16px}
+.pb-claim{position:relative;margin-top:16px}
+.pb-lbl{display:block;margin-bottom:8px;font-size:.88rem;font-weight:700;color:#fff}
+.pb-row{display:flex;gap:8px}
+.pb-row .inp{flex:1;min-width:0}
+.pb-row .btn{flex:0 0 auto;white-space:nowrap}
+.pb-err{margin:6px 0 0;color:#fca5a5;font-size:.82rem;font-weight:650}
+.pb-fine{font-size:.8rem;color:rgba(255,255,255,.55)}
+@media (max-width:640px){ .pb-row{flex-direction:column} .pb-row .btn{width:100%} }
 .promo-ask{margin-top:6px}
 .promo-ask a{font-weight:700}
 @media (prefers-reduced-motion:no-preference){
@@ -2869,7 +2877,7 @@ function promoHTML() {
 }
 
 /* Iššokantis langas nerodomas iškart: lankytojas pirma pamato puslapį.
-   Atsidaro po 12 s, nuslinkus trečdalį puslapio arba pelei krypstant link
+   Atsidaro po 4 s, nuslinkus trečdalį puslapio arba pelei krypstant link
    naršyklės skirtukų — kas įvyks pirmiau. Tam pačiam lankytojui — ne dažniau
    kaip kartą per 7 dienas. Jei žmogus jau pildo anketą — netrukdom. */
 const K_PROMO_SEEN = "wl_promo_seen";
@@ -2888,7 +2896,7 @@ function maybePromo(force) {
     promoStop();
     if (currentRoute().path !== "/rangovams" || $(".ovl")) return;
     const a = document.activeElement;
-    if (a && a.closest && a.closest("#partnerForm")) return;
+    if (a && a.closest && a.closest("#partnerForm, #promoInline")) return;
     openPromo();
   };
   const onScroll = () => {
@@ -2897,8 +2905,8 @@ function maybePromo(force) {
     if (h > 0 && window.scrollY / h >= 0.35) fire();
   };
   const onOut = e => { if (!e.relatedTarget && e.clientY <= 0) fire(); };
-  const onFocus = e => { if (e.target && e.target.closest && e.target.closest("#partnerForm")) promoStop(); };
-  const tm = setTimeout(fire, 12000);
+  const onFocus = e => { if (e.target && e.target.closest && e.target.closest("#partnerForm, #promoInline")) promoStop(); };
+  const tm = setTimeout(fire, 4000);
   window.addEventListener("scroll", onScroll, { passive: true });
   const pele = window.matchMedia && window.matchMedia("(pointer:fine)").matches;
   if (pele) document.addEventListener("mouseout", onOut);
@@ -2929,32 +2937,52 @@ function openPromo() {
         err.hidden = false; inp.focus(); return;
       }
       err.hidden = true;
-      const kodas = "WLP-" + reqCode().slice(3);
-      store.set(K_PROMO, { email: v, at: new Date().toISOString(), code: kodas });
-      /* Registracija iškart atsiranda skydelio RANGOVŲ sąraše — net jei pilnos
-         anketos žmogus taip ir nepateiks. Administratoriui belieka pažymėti
-         sritis su regionais ir patvirtinti; rinkti duomenų ranka nereikia. */
-      WLData.submit("partners", {
-        code: kodas, status: "lead", company: v.split("@")[1] || v,
-        reg_code: "", person: "", phone: "", email: v,
-        categories: [], regions: [], credits: 0, promo: "first-free",
-        msg: "Užsiregistravo akcijai „pirma užklausa nemokamai“ iššokančiame lange. "
-           + "Pilna anketa dar nepateikta.",
-        notes: []
-      });
       closeModal();
-      toast(L ? "Puiku! Užpildykite anketą — pirmą užklausą atrakinsite nemokamai."
-              : "Great! Fill in the application — your first lead is free.", "ok");
-      renderPartnerForm(); bindPartnerForm();
-      const pf = $("#partnerForm");
-      if (pf) {
-        const em = pf.querySelector("#pemail"); if (em) em.value = v;
-        pf.scrollIntoView({ behavior: "smooth", block: "start" });
-        const nm = pf.querySelector("#pname"); if (nm) setTimeout(() => nm.focus(), 420);
-      }
+      promoClaim(v, "iššokančiame lange");
     });
   }});
 }
+
+/* Bendra akcijos registracija — iš iššokančio lango ir iš juostos virš anketos. */
+function promoClaim(v, kur) {
+  const L = LANG === "lt";
+  const kodas = "WLP-" + reqCode().slice(3);
+  store.set(K_PROMO, { email: v, at: new Date().toISOString(), code: kodas });
+  promoStop();
+  /* Registracija iškart atsiranda skydelio RANGOVŲ sąraše — net jei pilnos
+     anketos žmogus taip ir nepateiks. Administratoriui belieka pažymėti
+     sritis su regionais ir patvirtinti; rinkti duomenų ranka nereikia. */
+  WLData.submit("partners", {
+    code: kodas, status: "lead", company: v.split("@")[1] || v,
+    reg_code: "", person: "", phone: "", email: v,
+    categories: [], regions: [], credits: 0, promo: "first-free",
+    msg: "Užsiregistravo akcijai „pirma užklausa nemokamai“ " + kur + ". "
+       + "Pilna anketa dar nepateikta.",
+    notes: []
+  });
+  toast(L ? "Puiku! Nemokama užklausa jūsų. Užpildykite anketą — kad galėtume jus patvirtinti."
+          : "Great! Your free lead is reserved. Fill in the application so we can approve you.", "ok");
+  renderPartnerForm(); bindPartnerForm();
+  const pf = $("#partnerForm");
+  if (pf) {
+    const em = pf.querySelector("#pemail"); if (em) em.value = v;
+    pf.scrollIntoView({ behavior: "smooth", block: "start" });
+    const nm = pf.querySelector("#pname"); if (nm) setTimeout(() => nm.focus(), 420);
+  }
+}
+document.addEventListener("submit", e => {
+  const f = e.target;
+  if (!f || f.id !== "promoInline") return;
+  e.preventDefault();
+  const L = LANG === "lt", inp = f.querySelector("#promoInlineEmail"), err = $("#promoInlineErr");
+  if (spamItartinas(f)) return;
+  const v = (inp.value || "").trim();
+  if (!isEmail(v)) {
+    if (err) { err.textContent = L ? "Įveskite veikiantį el. paštą" : "Enter a valid email"; err.hidden = false; }
+    inp.classList.add("bad"); inp.focus(); return;
+  }
+  promoClaim(v, "juostoje virš anketos");
+});
 
 /* Akcijos juosta anketos viršuje — rodoma visiems rangovams.
    Kas jau užsiregistravo akcijai, vietoj mygtuko mato patvirtinimą. */
@@ -2974,24 +3002,34 @@ function promoBadge() {
           "Try WorxLead risk-free: your first client contact is on us. The credit is granted once we approve your application.")) + "</p>" +
       "</div>" +
     "</div>" +
+    (got ? "" :
+      /* Užtenka el. pašto — tai mažiausias žingsnis. Pilną anketą žmogus pildo po to. */
+      '<form class="pb-claim" id="promoInline" novalidate>' + spamLaukas() +
+        '<label class="pb-lbl" for="promoInlineEmail">' + esc(C("promo.bn.lbl",
+          "Palikite el. paštą — nemokamą užklausą rezervuosime jums", "Leave your email — we'll reserve your free lead")) + "</label>" +
+        '<div class="pb-row">' +
+          '<input class="inp" id="promoInlineEmail" type="email" inputmode="email" autocomplete="email" placeholder="vardas@imone.lt" required>' +
+          '<button class="btn" type="submit">' + ic("gift") + esc(C("promo.cta", "Atsiimti nemokamą užklausą", "Claim my free lead")) + "</button>" +
+        "</div>" +
+        '<p class="pb-err" id="promoInlineErr" hidden></p>' +
+      "</form>") +
     '<ol class="pb-steps">' +
-      zingsnis(1, L ? "Užpildykite anketą" : "Fill in the form", L ? "apie 2 min." : "about 2 min") +
-      zingsnis(2, L ? "Patvirtiname" : "We approve", L ? "per 1–2 darbo d." : "within 1–2 business days") +
+      zingsnis(1, L ? "Palikite el. paštą" : "Leave your email", L ? "10 sekundžių" : "10 seconds") +
+      zingsnis(2, L ? "Užpildykite anketą" : "Fill in the form", L ? "apie 2 min., patvirtiname per 1–2 d." : "about 2 min, approved in 1–2 days") +
       zingsnis(3, L ? "Gaunate užklausą" : "You get a lead", L ? "pirma — 0 €" : "the first one is 0 €") +
     "</ol>" +
     '<div class="pb-foot">' +
       (CONFIG.email ? "<span>" + esc(L ? "Klausimų?" : "Questions?") + ' <a href="mailto:' + esc(CONFIG.email) + '">' + esc(CONFIG.email) + "</a></span>" : "<span></span>") +
-      (got
-        ? '<span class="pb-ok">' + ic("check") + esc(L ? "Akcija užregistruota" : "Offer claimed") + "</span>"
-        : '<button class="btn sm" type="button" data-promo-open>' + ic("gift") + esc(C("promo.cta", "Atsiimti nemokamą užklausą", "Claim my free lead")) + "</button>") +
+      (got ? '<span class="pb-ok">' + ic("check") + esc(L ? "Akcija užregistruota — užpildykite anketą žemiau" : "Offer claimed — fill in the form below") + "</span>"
+           : '<span class="pb-fine">' + esc(L ? "Naujienlaiškių nesiunčiame." : "No newsletters.") + "</span>") +
     "</div>" +
   "</div>";
 }
 function renderPartnerForm() {
   const L = LANG === "lt";
   const w = $("#partnerFormWrap"); if (!w) return;
-  w.innerHTML =
-    '<form id="partnerForm" novalidate>' + spamLaukas() + promoBadge() +
+  w.innerHTML = promoBadge() +
+    '<form id="partnerForm" novalidate>' + spamLaukas() +
     '<div class="row"><div class="field"><label for="pname">' + (L ? "Įmonės pavadinimas arba vardas" : "Company name or your name") + ' <span class="req">*</span></label>' +
     '<input class="inp" id="pname" name="pname" type="text" autocomplete="organization">' + fieldErr("pname") + "</div>" +
     '<div class="field"><label for="pcode">' + (L ? "Įmonės arba ind. veiklos kodas" : "Company or self-employment code") + ' <span class="req">*</span></label>' +
