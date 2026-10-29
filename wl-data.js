@@ -609,7 +609,8 @@
       { id: "technika", lt: "Buitinė įranga", en: "Home appliances", lead: 20 },
       { id: "minksti", lt: "Minkšti baldai", en: "Upholstered furniture", lead: 20 },
       { id: "energija", lt: "Atsinaujinanti energija", en: "Renewable energy", lead: 30 },
-      { id: "akmuo", lt: "Akmens gaminiai", en: "Stone products", lead: 25 }
+      { id: "akmuo", lt: "Akmens gaminiai", en: "Stone products", lead: 25 },
+      { id: "prieziura", lt: "Statybos vadovai ir techninė priežiūra", en: "Site managers & technical supervision", lead: 25 }
     ],
     regions: [
       { id: "vilnius", lt: "Vilnius ir rajonas" }, { id: "kaunas", lt: "Kaunas ir rajonas" },
@@ -623,7 +624,8 @@
       plotas: "Plotas", ilgis: "Ilgis / plotis", taskai: "Taškų skaičius", galia: "Galia",
       etapas: "Reikalingas etapas", tipas: "Darbų pobūdis", formatas: "Plytelių formatas",
       medziagos: "Medžiagos", sistema: "Sistema", danga: "Danga", fasadai: "Fasadų tipas",
-      apimtis: "Apimtis", prietaisai: "Prietaisai", vieta: "Įrengimo vieta", medziaga: "Medžiaga"
+      apimtis: "Apimtis", prietaisai: "Prietaisai", vieta: "Įrengimo vieta", medziaga: "Medžiaga",
+      specialistas: "Reikalingas specialistas", kategorija: "Statinio kategorija"
     },
     objects: { butas: "Butas", namas: "Privatus namas", naujas: "Naujos statybos objektas", komercija: "Komercinės patalpos", kita: "Kita" },
     timing: { asap: "Kuo greičiau", "1men": "Per mėnesį", "3men": "Per 1–3 mėnesius", planuoju: "Tik planuoja" },

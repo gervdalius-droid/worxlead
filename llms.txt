@@ -27,6 +27,7 @@ Valdytojas: WorxLead. El. paštas: labas@worxlead.lt.
 - [Minkšti baldai](https://worxlead.lt/kategorijos/minksti)
 - [Atsinaujinanti energija](https://worxlead.lt/kategorijos/energija)
 - [Akmens gaminiai](https://worxlead.lt/kategorijos/akmuo)
+- [Statybos vadovai ir techninė priežiūra](https://worxlead.lt/kategorijos/prieziura)
 
 ## Puslapiai
 

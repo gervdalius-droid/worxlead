@@ -50,7 +50,7 @@ RewriteRule ^mano/?$ /index.html [L]
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
   # Turinio politika: svetimas skriptas nepaleidžiamas net jei kaip nors
   # patektų į puslapį. Parašus (sha256) perskaičiuoja scripts/build-dist.py.
-  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'sha256-CGoTgfMB9AUwtTG4Q8n4AQwM7Hu+HZQSScOMLXepc9k=' 'sha256-+R8PQMec7XwxqmmavPCC8xb+9HnN4dCwHJammJSJwVw=' https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.facebook.com; font-src 'self' data:; connect-src 'self' https://szqgchsvoinzvhvmvsuq.supabase.co https://www.facebook.com https://connect.facebook.net; media-src 'self' blob:; worker-src 'self' blob:; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'sha256-CGoTgfMB9AUwtTG4Q8n4AQwM7Hu+HZQSScOMLXepc9k=' 'sha256-NErNnO+VUYAI0+oQlGozyh838186eJa9/VQNMiea9t8=' https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.facebook.com; font-src 'self' data:; connect-src 'self' https://szqgchsvoinzvhvmvsuq.supabase.co https://www.facebook.com https://connect.facebook.net; media-src 'self' blob:; worker-src 'self' blob:; upgrade-insecure-requests"
 
   # HTML niekada neįkešuojamas — kad pakeitimai matytųsi iškart
   <FilesMatch "\.html$">
